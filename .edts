@@ -1,0 +1,4 @@
+:name "esmpp34raw"
+:node-sname "esmpp34raw"
+:lib-dirs '("src" "test")
+:app-include-dirs '("include")

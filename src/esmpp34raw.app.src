@@ -1,0 +1,12 @@
+{application, esmpp34raw,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { esmpp34raw_app, []}},
+  {env, []}
+ ]}.

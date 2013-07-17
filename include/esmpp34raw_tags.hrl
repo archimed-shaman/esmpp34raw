@@ -1,0 +1,49 @@
+-ifndef(esmpp34raw_tags).
+-define(esmpp34raw_tags, true).
+
+-define(dest_addr_subunit,           16#0005).
+-define(dest_network_type,           16#0006).
+-define(dest_bearer_type,            16#0007).
+-define(dest_telematics_id,          16#0008).
+-define(source_addr_subunit,         16#000D).
+-define(source_network_type,         16#000E).
+-define(source_bearer_type,          16#000F).
+-define(source_telematics_id,        16#0010).
+-define(qos_time_to_live,            16#0017).
+-define(payload_type,                16#0019).
+-define(additional_status_info_text, 16#001D).
+-define(receipted_message_id,        16#001E).
+-define(ms_msg_wait_facilities,      16#0030).
+-define(privacy_indicator,           16#0201).
+-define(source_subaddress,           16#0202).
+-define(dest_subaddress,             16#0203).
+-define(user_message_reference,      16#0204).
+-define(user_response_code,          16#0205).
+-define(source_port,                 16#020A).
+-define(destination_port,            16#020B).
+-define(sar_msg_ref_num,             16#020C).
+-define(language_indicator,          16#020D).
+-define(sar_total_segments,          16#020E).
+-define(sar_segment_seqnum,          16#020F).
+-define(sc_interface_version,        16#0210).
+-define(callback_num_pres_ind,       16#0302).
+-define(callback_num_atag,           16#0303).
+-define(number_of_messages,          16#0304).
+-define(callback_num,                16#0381).
+-define(dpf_result,                  16#0420).
+-define(set_dpf,                     16#0421).
+-define(ms_availability_status,      16#0422).
+-define(network_error_code,          16#0423).
+-define(message_payload,             16#0424).
+-define(delivery_failure_reason,     16#0425).
+-define(more_messages_to_send,       16#0426).
+-define(message_state,               16#0427).
+-define(ussd_service_op,             16#0501).
+-define(display_time,                16#1201).
+-define(sms_signal,                  16#1203).
+-define(ms_validity,                 16#1204).
+-define(alert_on_msg_delivery,       16#130C).
+-define(its_reply_type,              16#1380).
+-define(its_session_info,            16#1383).
+
+-endif.
