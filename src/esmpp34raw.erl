@@ -1,4 +1,4 @@
--module(esmpp34raw_stream).
+-module(esmpp34raw).
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
