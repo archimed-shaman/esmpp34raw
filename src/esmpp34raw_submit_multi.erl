@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -43,22 +43,22 @@ unpack(Stream) when is_binary(Stream) ->
 
     %% decode optional
     unpack_optional(#submit_multi{service_type            = ServiceType,
-				  source_addr_ton         = SourceAddrTon,
-				  source_addr_npi         = SourceAddrNpi,
-				  source_addr             = SourceAddr,
-				  number_of_dests         = NumberOfDests,
-				  dest_address            = DestAddress,
-				  esm_class               = EsmClass,
-				  protocol_id             = ProtocolId,
-				  priority_flag           = PriorityFlag,
-				  schedule_delivery_time  = ScheduleDeliveryTime,
-				  validity_period         = ValidityPeriod,
-				  registered_delivery     = RegisteredDelivery,
-				  replace_if_present_flag = ReplaceIfPresentFlag,
-				  data_coding             = DataCoding,
-				  sm_default_msg_id       = SmDefaultMsgId,
-				  sm_length               = SmLength,
-				  short_message           = binary_to_list(ShortMessage)}, Stream_9).
+                                  source_addr_ton         = SourceAddrTon,
+                                  source_addr_npi         = SourceAddrNpi,
+                                  source_addr             = SourceAddr,
+                                  number_of_dests         = NumberOfDests,
+                                  dest_address            = DestAddress,
+                                  esm_class               = EsmClass,
+                                  protocol_id             = ProtocolId,
+                                  priority_flag           = PriorityFlag,
+                                  schedule_delivery_time  = ScheduleDeliveryTime,
+                                  validity_period         = ValidityPeriod,
+                                  registered_delivery     = RegisteredDelivery,
+                                  replace_if_present_flag = ReplaceIfPresentFlag,
+                                  data_coding             = DataCoding,
+                                  sm_default_msg_id       = SmDefaultMsgId,
+                                  sm_length               = SmLength,
+                                  short_message           = binary_to_list(ShortMessage)}, Stream_9).
 
 
 
@@ -72,9 +72,9 @@ pack(#submit_multi{} = Body) ->
     %% FIXME: test this firstly
     PackedAddresses      = pack_dest_addresses_list(<<>>, 0, Body#submit_multi.dest_address),
     DestAddress          = case PackedAddresses of
-			       {NumberOfDests, Addr} -> Addr;
-			       _ -> throw(bad_number_of_dests)
-			   end,
+                               {NumberOfDests, Addr} -> Addr;
+                               _ -> throw(bad_number_of_dests)
+                           end,
     EsmClass             = Body#submit_multi.esm_class,
     ProtocolId           = Body#submit_multi.protocol_id,
     PriorityFlag         = Body#submit_multi.priority_flag,
@@ -85,10 +85,10 @@ pack(#submit_multi{} = Body) ->
     DataCoding           = Body#submit_multi.data_coding,
     SmDefaultMsgId       = Body#submit_multi.sm_default_msg_id,
     SmLength             = Body#submit_multi.sm_length,
-    ShortMessage         = case	length(Body#submit_multi.short_message) /= SmLength of
-			       true -> throw(bad_short_message_length);
-			       _ -> list_to_binary(Body#submit_multi.short_message)
-			   end,
+    ShortMessage         = case length(Body#submit_multi.short_message) /= SmLength of
+                               true -> throw(bad_short_message_length);
+                               _ -> list_to_binary(Body#submit_multi.short_message)
+                           end,
 
     %% pack optional
 
@@ -190,15 +190,15 @@ get_dest_addresses_list(Stream, 0, Accumulator) ->
 
 %% 5.2.25 dest_flag, 1 - SME Address
 get_dest_addresses_list(<< 1:           8/big-unsigned-integer,
-			   DestAddrTon: 8/big-unsigned-integer,
-			   DestAddrNpi: 8/big-unsigned-integer,
-			   Stream        /binary>>, NumberOfDests, Accumulator) ->
+                           DestAddrTon: 8/big-unsigned-integer,
+                           DestAddrNpi: 8/big-unsigned-integer,
+                           Stream        /binary>>, NumberOfDests, Accumulator) ->
     {DestinationAddr, Tail} = esmpp34raw_utils:get_var_c_octet_string(Stream, 21),
     get_dest_addresses_list(Tail, NumberOfDests - 1, [{DestAddrTon, DestAddrNpi, DestinationAddr} | Accumulator]);
-    
+
 %% 5.2.25 dest_flag, 2 - Distribution List Name
 get_dest_addresses_list(<< 2:    8/big-unsigned-integer,
-			   Stream /binary>>, NumberOfDests, Accumulator) ->
+                           Stream /binary>>, NumberOfDests, Accumulator) ->
     {DlName, Tail} = esmpp34raw_utils:get_var_c_octet_string(Stream, 21),
     get_dest_addresses_list(Tail, NumberOfDests - 1, [DlName | Accumulator]).
 
@@ -210,14 +210,13 @@ pack_dest_addresses_list(Accumulator, Size, []) ->
 pack_dest_addresses_list(Accumulator, Size, [{DestAddrTon, DestAddrNpi, DestinationAddr} | Rest]) ->
     PackedDestinationAddr = esmpp34raw_utils:pack_var_c_octet_string(DestinationAddr, 21),
     pack_dest_addresses_list( << Accumulator           /binary,
-				 1:                   8/big-unsigned-integer,
-				 DestAddrTon:         8/big-unsigned-integer,
-				 DestAddrNpi:         8/big-unsigned-integer,
-				 PackedDestinationAddr /binary>>, Size + 1, Rest);
+                                 1:                   8/big-unsigned-integer,
+                                 DestAddrTon:         8/big-unsigned-integer,
+                                 DestAddrNpi:         8/big-unsigned-integer,
+                                 PackedDestinationAddr /binary>>, Size + 1, Rest);
 
 pack_dest_addresses_list(Accumulator, Size, [DlName | Rest]) ->
     PackedDlName = esmpp34raw_utils:pack_var_c_octet_string(DlName, 21),
     pack_dest_addresses_list( << Accumulator  /binary,
-				 2:          8/big-unsigned-integer,
-				 PackedDlName /binary>>, Size + 1, Rest).
-
+                                 2:          8/big-unsigned-integer,
+                                 PackedDlName /binary>>, Size + 1, Rest).

@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -27,11 +27,11 @@ unpack(Stream) when is_binary(Stream) ->
        Stream_3        /binary >> = Stream_2,
     {EsmeAddr, Stream_4}   = esmpp34raw_utils:get_var_c_octet_string(Stream_3, 65),
     unpack_optional(#alert_notification{ source_addr_ton = SourceAddrTon,
-					 source_addr_npi = SourceAddrNpi,
-					 source_addr     = SourceAddr,
-					 esme_addr_ton   = EsmeAddrTon,
-					 esme_addr_npi   = EsmeAddrNpi,
-					 esme_addr       = EsmeAddr }, Stream_4).
+                                         source_addr_npi = SourceAddrNpi,
+                                         source_addr     = SourceAddr,
+                                         esme_addr_ton   = EsmeAddrTon,
+                                         esme_addr_npi   = EsmeAddrNpi,
+                                         esme_addr       = EsmeAddr }, Stream_4).
 
 
 
@@ -57,4 +57,3 @@ pack(#alert_notification{} = Data) ->
 ?unpack_optional (alert_notification);
 ?define_optional (alert_notification, ms_availability_status, ?ms_availability_status);
 ?optional_done   (alert_notification).
-

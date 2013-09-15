@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 get_decoder/2,
-	 get_encoder/1
-	]).
+         get_decoder/2,
+         get_encoder/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -50,14 +50,14 @@ get_decoder(?payload_type, 1 = _Size) ->
 
 get_decoder(?additional_status_info_text, Size) when Size =< 256 ->
     fun(X) ->
-	    {Y, <<>>} = esmpp34raw_utils:get_c_octet_string(X, [Size]),     %% 5.3.2.11
-	    Y
+            {Y, <<>>} = esmpp34raw_utils:get_c_octet_string(X, [Size]),     %% 5.3.2.11
+            Y
     end;
 
 get_decoder(?receipted_message_id, Size) when Size =< 65 ->
     fun(X) ->
-	    {Y, <<>>} = esmpp34raw_utils:get_c_octet_string(X, [Size]),   %% 5.3.2.12
-	    Y
+            {Y, <<>>} = esmpp34raw_utils:get_c_octet_string(X, [Size]),   %% 5.3.2.12
+            Y
     end;
 
 %% TODO: add decoder for ms_msg_wait_facilities bitmask
@@ -118,7 +118,7 @@ get_decoder(?ms_availability_status, 1 = _Size) ->
     fun(<<X: 8/big-unsigned-integer>>) -> X end;                          %% 5.3.2.30
 
 get_decoder(?network_error_code, 3 = _Size) ->
-    fun(<<X: 3/binary>>) -> binary_to_list(X) end;	                  %% 5.3.2.31
+    fun(<<X: 3/binary>>) -> binary_to_list(X) end;                        %% 5.3.2.31
 
 get_decoder(?message_payload, Size) ->
     fun(<<X: Size/binary>>) -> binary_to_list(X) end;                     %% 5.3.2.32
@@ -201,12 +201,12 @@ get_encoder(?payload_type) ->
 
 get_encoder(?additional_status_info_text) ->
     fun(X) when is_list(X) ->
-	    esmpp34raw_utils:pack_var_c_octet_string(X, 256)              %% 5.3.2.11
+            esmpp34raw_utils:pack_var_c_octet_string(X, 256)              %% 5.3.2.11
     end;
 
 get_encoder(?receipted_message_id) ->
     fun(X) when is_list(X) ->
-	    esmpp34raw_utils:pack_var_c_octet_string(X, 65)                    %% 5.3.2.12
+            esmpp34raw_utils:pack_var_c_octet_string(X, 65)                    %% 5.3.2.12
     end;
 
 get_encoder(?ms_msg_wait_facilities) ->
@@ -217,12 +217,12 @@ get_encoder(?privacy_indicator) ->
 
 get_encoder(?source_subaddress) ->
     fun(X) when is_list(X); size(X) >=2; size(X) =< 23 ->                 %% 5.3.2.15
-	    <<X/binary>> 
+            <<X/binary>>
     end;
 
 get_encoder(?dest_subaddress) ->
     fun(X) when is_list(X); size(X) >=2; size(X) =< 23 ->                 %% 5.3.2.16
-	    <<X/binary>> 
+            <<X/binary>>
     end;
 
 get_encoder(?user_message_reference) ->
@@ -268,8 +268,8 @@ get_encoder(?ms_availability_status) ->
     fun(X) -> <<X: 8/big-unsigned-integer>> end;                          %% 5.3.2.30
 
 get_encoder(?network_error_code) ->
-    fun(X) when is_list(X); size(X) == 3 -> 
-	    list_to_binary(X)	                                          %% 5.3.2.31
+    fun(X) when is_list(X); size(X) == 3 ->
+            list_to_binary(X)                                             %% 5.3.2.31
     end;
 
 get_encoder(?message_payload) ->
@@ -285,8 +285,8 @@ get_encoder(?message_state) ->
     fun(X) -> <<X: 8/big-unsigned-integer>> end;                          %% 5.3.2.35
 
 get_encoder(?callback_num) ->
-    fun(X) when is_list(X); size(X) >=4; size(X) =< 19 -> 
-	    <<X/binary>>                                                  %% 5.3.2.36
+    fun(X) when is_list(X); size(X) >=4; size(X) =< 19 ->
+            <<X/binary>>                                                  %% 5.3.2.36
     end;
 
 get_encoder(?callback_num_pres_ind) ->
@@ -294,7 +294,7 @@ get_encoder(?callback_num_pres_ind) ->
 
 get_encoder(?callback_num_atag) ->
     fun(X) when is_list(X); size(X) =< 65 ->
-	    <<X/binary>>                                                  %% 5.3.2.38
+            <<X/binary>>                                                  %% 5.3.2.38
     end;
 
 get_encoder(?number_of_messages) ->

@@ -8,7 +8,5 @@
                   kernel,
                   stdlib
                  ]},
-  {mod, { esmpp34raw_app, []}},
   {env, []}
  ]}.
-

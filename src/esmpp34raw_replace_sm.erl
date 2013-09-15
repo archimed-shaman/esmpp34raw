@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -30,15 +30,15 @@ unpack(Stream) when is_binary(Stream) ->
        Stream_6            /binary >> = Stream_5,
     {ShortMessage, <<>>}              = esmpp34raw_utils:get_c_octet_string(Stream_6, [SmLength]),
     #replace_sm { message_id             = MessageId,
-		  source_addr_ton        = SourceAddrTon,
-		  source_addr_npi        = SourceAddrNpi,
-		  source_addr            = SourceAddr,
-		  schedule_delivery_time = ScheduleDeliveryTime,
-		  validity_period        = ValidityPeriod,
-		  registered_delivery    = RegistereDelivery,
-		  sm_default_msg_id      = SmDefaultMsgId,
-		  sm_length              = SmLength,
-		  short_message          = ShortMessage}.
+                  source_addr_ton        = SourceAddrTon,
+                  source_addr_npi        = SourceAddrNpi,
+                  source_addr            = SourceAddr,
+                  schedule_delivery_time = ScheduleDeliveryTime,
+                  validity_period        = ValidityPeriod,
+                  registered_delivery    = RegistereDelivery,
+                  sm_default_msg_id      = SmDefaultMsgId,
+                  sm_length              = SmLength,
+                  short_message          = ShortMessage}.
 
 
 
@@ -53,9 +53,9 @@ pack(#replace_sm{} = Body) ->
     SmDefaultMsgId       = Body#replace_sm.sm_default_msg_id,
     SmLength             = Body#replace_sm.sm_length,
     ShortMessage         = case length(Body#replace_sm.short_message) /= SmLength of
-			       true -> throw(bad_short_message_length);
-			       _ -> list_to_binary(Body#replace_sm.short_message)
-			   end,
+                               true -> throw(bad_short_message_length);
+                               _ -> list_to_binary(Body#replace_sm.short_message)
+                           end,
     << MessageId            /binary,
        SourceAddrTon:      8/big-unsigned-integer,
        SourceAddrNpi:      8/big-unsigned-integer,
@@ -66,4 +66,3 @@ pack(#replace_sm{} = Body) ->
        SmDefaultMsgId:     8/big-unsigned-integer,
        SmLength:           8/big-unsigned-integer,
        ShortMessage         /binary >>.
-

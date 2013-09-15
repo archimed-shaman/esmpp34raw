@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -32,15 +32,15 @@ unpack(Stream) when is_binary(Stream) ->
       DataCoding:         8/big-unsigned-integer,
       Stream_6             /binary>> = Stream_5,
     unpack_optional(#data_sm{service_type        = ServiceType,
-			     source_addr_ton     = SourceAddrTon,
-			     source_addr_npi     = SourceAddrNpi,
-			     source_addr         = SourceAddr,
-			     dest_addr_ton       = DestAddrTon,
-			     dest_addr_npi       = DestAddrNpi,
-			     destination_addr    = DestinationAddr,
-			     esm_class           = EsmClass,
-			     registered_delivery = RegisteredDelivery,
-			     data_coding         = DataCoding }, Stream_6).
+                             source_addr_ton     = SourceAddrTon,
+                             source_addr_npi     = SourceAddrNpi,
+                             source_addr         = SourceAddr,
+                             dest_addr_ton       = DestAddrTon,
+                             dest_addr_npi       = DestAddrNpi,
+                             destination_addr    = DestinationAddr,
+                             esm_class           = EsmClass,
+                             registered_delivery = RegisteredDelivery,
+                             data_coding         = DataCoding }, Stream_6).
 
 
 

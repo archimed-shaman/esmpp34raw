@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -43,23 +43,23 @@ unpack(Stream) when is_binary(Stream) ->
 
     %% decode optional
     unpack_optional(#submit_sm{service_type            = ServiceType,
-			       source_addr_ton         = SourceAddrTon,
-			       source_addr_npi         = SourceAddrNpi,
-			       source_addr             = SourceAddr,
-			       dest_addr_ton           = DestAddrTon,
-			       dest_addr_npi           = DestAddrNpi,
-			       destination_addr        = DestinationAddr,
-			       esm_class               = EsmClass,
-			       protocol_id             = ProtocolId,
-			       priority_flag           = PriorityFlag,
-			       schedule_delivery_time  = ScheduleDeliveryTime,
-			       validity_period         = ValidityPeriod,
-			       registered_delivery     = RegisteredDelivery,
-			       replace_if_present_flag = ReplaceIfPresentFlag,
-			       data_coding             = DataCoding,
-			       sm_default_msg_id       = SmDefaultMsgId,
-			       sm_length               = SmLength,
-			       short_message           = binary_to_list(ShortMessage)}, Stream_9).
+                               source_addr_ton         = SourceAddrTon,
+                               source_addr_npi         = SourceAddrNpi,
+                               source_addr             = SourceAddr,
+                               dest_addr_ton           = DestAddrTon,
+                               dest_addr_npi           = DestAddrNpi,
+                               destination_addr        = DestinationAddr,
+                               esm_class               = EsmClass,
+                               protocol_id             = ProtocolId,
+                               priority_flag           = PriorityFlag,
+                               schedule_delivery_time  = ScheduleDeliveryTime,
+                               validity_period         = ValidityPeriod,
+                               registered_delivery     = RegisteredDelivery,
+                               replace_if_present_flag = ReplaceIfPresentFlag,
+                               data_coding             = DataCoding,
+                               sm_default_msg_id       = SmDefaultMsgId,
+                               sm_length               = SmLength,
+                               short_message           = binary_to_list(ShortMessage)}, Stream_9).
 
 
 
@@ -82,10 +82,10 @@ pack(#submit_sm{} = Body) ->
     DataCoding           = Body#submit_sm.data_coding,
     SmDefaultMsgId       = Body#submit_sm.sm_default_msg_id,
     SmLength             = Body#submit_sm.sm_length,
-    ShortMessage = case	length(Body#submit_sm.short_message) /= SmLength of
-		       true -> throw(bad_short_message_length);
-		       _ -> list_to_binary(Body#submit_sm.short_message)
-		   end,
+    ShortMessage = case length(Body#submit_sm.short_message) /= SmLength of
+                       true -> throw(bad_short_message_length);
+                       _ -> list_to_binary(Body#submit_sm.short_message)
+                   end,
 
     %% pack optional
 
@@ -198,4 +198,3 @@ pack(#submit_sm{} = Body) ->
 ?define_optional (submit_sm, its_session_info,       ?its_session_info);
 ?define_optional (submit_sm, ussd_service_op,        ?ussd_service_op);
 ?optional_done   (submit_sm).
-

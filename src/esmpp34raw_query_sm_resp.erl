@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -22,9 +22,9 @@ unpack(Stream) when is_binary(Stream) ->
     << MessageState: 8/big-unsigned-integer,
        ErrorCode:    8/big-unsigned-integer >> = Stream_2,
     #query_sm_resp { message_id    = MessageId,
-		     final_date    = FinalDate,
-		     message_state = MessageState,
-		     error_code    = ErrorCode }.
+                     final_date    = FinalDate,
+                     message_state = MessageState,
+                     error_code    = ErrorCode }.
 
 
 
@@ -37,4 +37,3 @@ pack(#query_sm_resp{} = Body) ->
        FinalDate      /binary,
        MessageState: 8/big-unsigned-integer,
        ErrorCode:    8/big-unsigned-integer >>.
-

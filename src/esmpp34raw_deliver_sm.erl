@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack/1,
-	 pack/1
-	]).
+         unpack/1,
+         pack/1
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_tags.hrl").
@@ -43,19 +43,19 @@ unpack(Stream) when is_binary(Stream) ->
 
     %% decode optional
     unpack_optional(#deliver_sm{service_type            = ServiceType,
-				source_addr_ton         = SourceAddrTon,
-				source_addr_npi         = SourceAddrNpi,
-				source_addr             = SourceAddr,
-				dest_addr_ton           = DestAddrTon,
-				dest_addr_npi           = DestAddrNpi,
-				destination_addr        = DestinationAddr,
-				esm_class               = EsmClass,
-				protocol_id             = ProtocolId,
-				priority_flag           = PriorityFlag,
-				registered_delivery     = RegisteredDelivery,
-				data_coding             = DataCoding,
-				sm_length               = SmLength,
-				short_message           = binary_to_list(ShortMessage)}, Stream_9).
+                                source_addr_ton         = SourceAddrTon,
+                                source_addr_npi         = SourceAddrNpi,
+                                source_addr             = SourceAddr,
+                                dest_addr_ton           = DestAddrTon,
+                                dest_addr_npi           = DestAddrNpi,
+                                destination_addr        = DestinationAddr,
+                                esm_class               = EsmClass,
+                                protocol_id             = ProtocolId,
+                                priority_flag           = PriorityFlag,
+                                registered_delivery     = RegisteredDelivery,
+                                data_coding             = DataCoding,
+                                sm_length               = SmLength,
+                                short_message           = binary_to_list(ShortMessage)}, Stream_9).
 
 
 
@@ -78,10 +78,10 @@ pack(#deliver_sm{} = Body) ->
     DataCoding           = Body#deliver_sm.data_coding,
     SmDefaultMsgId       = Body#deliver_sm.sm_default_msg_id,
     SmLength             = Body#deliver_sm.sm_length,
-    ShortMessage = case	length(Body#deliver_sm.short_message) /= SmLength of
-		       true -> throw(bad_short_message_length);
-		       _ -> list_to_binary(Body#deliver_sm.short_message)
-		   end,
+    ShortMessage = case length(Body#deliver_sm.short_message) /= SmLength of
+                       true -> throw(bad_short_message_length);
+                       _ -> list_to_binary(Body#deliver_sm.short_message)
+                   end,
 
     %% pack optional
 
@@ -164,4 +164,3 @@ pack(#deliver_sm{} = Body) ->
 ?define_optional (deliver_sm, message_state,          ?message_state);
 ?define_optional (deliver_sm, receipted_message_id,   ?receipted_message_id);
 ?optional_done   (deliver_sm).
-

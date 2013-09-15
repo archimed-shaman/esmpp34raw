@@ -2,9 +2,9 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 unpack_sequence/1,
-	 pack_single/3
-	]).
+         unpack_sequence/1,
+         pack_single/3
+        ]).
 
 -include("esmpp34raw_types.hrl").
 -include("esmpp34raw_constants.hrl").
@@ -18,17 +18,18 @@
 -spec pack_pdu        (pdu_body(),   integer(),   integer())           -> binary().
 -spec pack_body       (pdu_body(),   integer(),   integer())           -> {integer(), binary()}.
 -spec unpack_body     (integer(),    integer(),   integer(), binary()) -> pdu_body() | binary().
-								
 
 
-%% @doc 
+
+%% @doc
 %% Unpacks the binary stream.
 %% Arguments:
 %%     1) Stream: binary()  - the input binary sequence to be dissected
 %% Returns:
-%%     1) the tuple of two elements:
+%%     1) the tuple of three elements:
 %%       1.1) the list of PDUs found
-%%       1.2) the rest of the binary stream
+%%       1.2) the list of unknown PDUs
+%%       1.3) the rest of the binary stream
 %% @end
 
 unpack_sequence(Stream) when is_binary(Stream) ->
@@ -36,7 +37,7 @@ unpack_sequence(Stream) when is_binary(Stream) ->
 
 
 
-%% @doc 
+%% @doc
 %% Packs the single SMPP PDU to the binary sequence. You should couple the several sequences by your own
 %% Arguments:
 %%     1) PduBody: pdu_body()       - a record, containing a body of one of the allowed SMPP packages
@@ -67,29 +68,29 @@ pack_single(PduBody, CommandStatus, SequenceNumber) ->
 unpack_pdu(PduList, FailedPduList, <<>>) ->
     {lists:reverse(PduList), lists:reverse(FailedPduList), <<>>};
 
-unpack_pdu(PduList, FailedPduList, <<CommandLength:  32/big-unsigned-integer, 
-				     CommandId:      32/big-unsigned-integer, 
-				     CommandStatus:  32/big-unsigned-integer,
-				     SequenceNumber: 32/big-unsigned-integer,
-				     Tail              /binary>>) when CommandLength - 16 =< byte_size(Tail) ->
+unpack_pdu(PduList, FailedPduList, <<CommandLength:  32/big-unsigned-integer,
+                                     CommandId:      32/big-unsigned-integer,
+                                     CommandStatus:  32/big-unsigned-integer,
+                                     SequenceNumber: 32/big-unsigned-integer,
+                                     Tail              /binary>>) when CommandLength - 16 =< byte_size(Tail) ->
     BodyLength = CommandLength - 16,
     <<Body:BodyLength/binary, Rest/binary>> = Tail,
     try
-	UnpackedBody = unpack_body(CommandId, CommandStatus, SequenceNumber, Body),
-	Pdu = #pdu {command_length  = CommandLength,
-		    command_id      = CommandId,
-		    command_status  = CommandStatus,
-		    sequence_number = SequenceNumber,
-		    body            = UnpackedBody},
-	unpack_pdu([Pdu | PduList], FailedPduList, Rest)
+        UnpackedBody = unpack_body(CommandId, CommandStatus, SequenceNumber, Body),
+        Pdu = #pdu {command_length  = CommandLength,
+                    command_id      = CommandId,
+                    command_status  = CommandStatus,
+                    sequence_number = SequenceNumber,
+                    body            = UnpackedBody},
+        unpack_pdu([Pdu | PduList], FailedPduList, Rest)
     catch
-	throw:Cause ->
-	    FailedPdu = #pdu {command_length  = CommandLength,
-			      command_id      = CommandId,
-			      command_status  = CommandStatus,
-			      sequence_number = SequenceNumber,
-			      body            = #unknown_pdu{error = Cause, binary_sequence = Body}},
-	    unpack_pdu(PduList, [FailedPdu | FailedPduList], Rest)
+        throw:Cause ->
+            FailedPdu = #pdu {command_length  = CommandLength,
+                              command_id      = CommandId,
+                              command_status  = CommandStatus,
+                              sequence_number = SequenceNumber,
+                              body            = #unknown_pdu{error = Cause, binary_sequence = Body}},
+            unpack_pdu(PduList, [FailedPdu | FailedPduList], Rest)
     end;
 
 
@@ -98,7 +99,7 @@ unpack_pdu(PduList, FailedPduList, Stream) ->
 
 
 
-%% @doc 
+%% @doc
 %% Packs the SMPP PDU to the binary sequence.
 %% Arguments:
 %%     1) PduBody: pdu_body()       - a record, containing a body of one of the allowed SMPP packages
@@ -114,15 +115,15 @@ pack_pdu(Body, CommandStatus, SequenceNumber) ->
     %% SMPP PDU Body is optional and may not be included with every SMPP PDU.
     {CommandId, PackedBody} = pack_body(Body, CommandStatus, SequenceNumber),
     CommandLength = byte_size(PackedBody) + 16,
-    <<CommandLength:     32/big-unsigned-integer, 
-      CommandId:         32/big-unsigned-integer, 
-      CommandStatus:     32/big-unsigned-integer, 
-      SequenceNumber:    32/big-unsigned-integer, 
+    <<CommandLength:     32/big-unsigned-integer,
+      CommandId:         32/big-unsigned-integer,
+      CommandStatus:     32/big-unsigned-integer,
+      SequenceNumber:    32/big-unsigned-integer,
       PackedBody/binary>>.
 
 
 
-%% @doc 
+%% @doc
 %% Packs the body of the PDU
 %% Arguments:
 %%     1) Body:          pdu_body() - the record, containing the PDU body
@@ -144,8 +145,8 @@ pack_body(#bind_transmitter_resp{} = Body, CommandStatus, _SequenceNumber) ->
     %% The body portion of the SMPP bind_transmitter_resp PDU is not returned
     %% if the command_status field contains a non-zero value;
     case CommandStatus of
-	?ESME_ROK  -> {?bind_transmitter_resp, esmpp34raw_bind_transmitter_resp:pack(Body)};
-	_ErrorCode -> {?bind_transmitter_resp, <<>>}
+        ?ESME_ROK  -> {?bind_transmitter_resp, esmpp34raw_bind_transmitter_resp:pack(Body)};
+        _ErrorCode -> {?bind_transmitter_resp, <<>>}
     end;
 
 pack_body(#bind_receiver{} = Body, _CommandStatus, _SequenceNumber) ->
@@ -156,8 +157,8 @@ pack_body(#bind_receiver_resp{} = Body, CommandStatus, _SequenceNumber) ->
     %% The bind_receiver_resp PDU Body is not returned if the command_status field
     %% contains a non-zero value.
     case CommandStatus of
-	?ESME_ROK  -> {?bind_receiver_resp, esmpp34raw_bind_receiver_resp:pack(Body)};
-	_ErrorCode -> {?bind_receiver_resp, <<>>}
+        ?ESME_ROK  -> {?bind_receiver_resp, esmpp34raw_bind_receiver_resp:pack(Body)};
+        _ErrorCode -> {?bind_receiver_resp, <<>>}
     end;
 
 pack_body(#bind_transceiver{} = Body, _CommandStatus, _SequenceNumber) ->
@@ -192,8 +193,8 @@ pack_body(#submit_sm_resp{} = Body, CommandStatus, _SequenceNumber) ->
     %% The submit_sm_resp PDU Body is not returned if the command_status field contains
     %% a non-zero value.
     case CommandStatus of
-	?ESME_ROK  -> {?submit_sm_resp, esmpp34raw_submit_sm_resp:pack(Body)};
-	_ErrorCode -> {?submit_sm_resp, <<>>}
+        ?ESME_ROK  -> {?submit_sm_resp, esmpp34raw_submit_sm_resp:pack(Body)};
+        _ErrorCode -> {?submit_sm_resp, <<>>}
     end;
 
 %% 4.5 "SUBMIT_MULTI" Operation
@@ -259,7 +260,7 @@ pack_body(#alert_notification{} = Body, _CommandStatus, _SequenceNumber) ->
 
 
 
-%% @doc 
+%% @doc
 %% Unpacks the body of the PDU from the binary sequence
 %% Arguments:
 %%     1) Type:          integer() - the type of the PDU
@@ -280,8 +281,8 @@ unpack_body(?bind_transmitter_resp, CommandStatus, _SequenceNumber, Stream) ->
     %% The body portion of the SMPP bind_transmitter_resp PDU is not returned
     %% if the command_status field contains a non-zero value;
     case CommandStatus of
-	?ESME_ROK  -> esmpp34raw_bind_transmitter_resp:unpack(Stream);
-	_ErrorCode -> #bind_transmitter_resp{}
+        ?ESME_ROK  -> esmpp34raw_bind_transmitter_resp:unpack(Stream);
+        _ErrorCode -> #bind_transmitter_resp{}
     end;
 
 unpack_body(?bind_receiver, _CommandStatus, _SequenceNumber, Stream) ->
@@ -292,8 +293,8 @@ unpack_body(?bind_receiver_resp, CommandStatus, _SequenceNumber, Stream) ->
     %% The bind_receiver_resp PDU Body is not returned if the command_status field
     %% contains a non-zero value.
     case CommandStatus of
-	?ESME_ROK  -> esmpp34raw_bind_receiver_resp:unpack(Stream);
-	_ErrorCode -> #bind_receiver_resp{}
+        ?ESME_ROK  -> esmpp34raw_bind_receiver_resp:unpack(Stream);
+        _ErrorCode -> #bind_receiver_resp{}
     end;
 
 unpack_body(?bind_transceiver, _CommandStatus, _SequenceNumber, Stream) ->
@@ -330,8 +331,8 @@ unpack_body(?submit_sm_resp, CommandStatus, _SequenceNumber, Stream) ->
     %% The submit_sm_resp PDU Body is not returned if the command_status field contains
     %% a non-zero value.
     case CommandStatus of
-	?ESME_ROK  -> esmpp34raw_submit_sm_resp:unpack(Stream);
-	_ErrorCode -> #submit_sm_resp{}
+        ?ESME_ROK  -> esmpp34raw_submit_sm_resp:unpack(Stream);
+        _ErrorCode -> #submit_sm_resp{}
     end;
 
 %% 4.5 "SUBMIT_MULTI" Operation
@@ -399,6 +400,3 @@ unpack_body(?alert_notification, _CommandStatus, _SequenceNumber, Stream) ->
 
 unpack_body(_Unknown, _CommandStatus, _SequenceNumber, <<_Body/binary>>) ->
     throw(unknown_pdu).
-
-
-

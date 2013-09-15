@@ -2,25 +2,25 @@
 -author("Morozov Alexander aka ~ArchimeD~").
 
 -export([
-	 get_var_c_octet_string/2,
-	 get_c_octet_string/2,
-	 pack_var_c_octet_string/2,
-	 pack_optional_tlv/3
-	]).
+         get_var_c_octet_string/2,
+         get_c_octet_string/2,
+         pack_var_c_octet_string/2,
+         pack_optional_tlv/3
+        ]).
 
 
 
 -spec get_var_c_octet_string    (binary(),  integer())            -> {string(), binary()};
-				(binary(),  infinity)             -> {string(), binary()}.
+                                (binary(),  infinity)             -> {string(), binary()}.
 -spec get_c_octet_string        (binary(),  [integer()])          -> {string(), binary()}.
 -spec pack_var_c_octet_string   (string(),  integer())            -> binary().
 -spec pack_optional_tlv         (integer(), any(),    function()) -> binary().
 -spec unpack_var_c_octet_string (string(),  binary(), integer())  -> {string(), binary()};
-				(string(),  binary(), infinity)   -> {string(), binary()}.
+                                (string(),  binary(), infinity)   -> {string(), binary()}.
 
 
 
-%% @doc 
+%% @doc
 %% Ejects the c-octet-string from the binary sequence. It is just null-terminated ascii string
 %% Arguments:
 %%     1) Stream:    binary()  - the input binary sequence
@@ -29,7 +29,7 @@
 %%     1) the tuple of two elements:
 %%       1.1) the decoded string
 %%       1.2) the rest of the binary stream
-%% @end 
+%% @end
 
 get_var_c_octet_string(Stream, MaxLength) when is_binary(Stream) ->
     unpack_var_c_octet_string([], Stream, MaxLength).
@@ -42,14 +42,14 @@ get_c_octet_string(Stream, PossibleSizes) when is_list(PossibleSizes) ->
 
 
 
-%% @doc 
+%% @doc
 %% Encodes the sting as c-octet-string into the binary sequnce
 %% Arguments:
 %%     1) String:    string()  - the string to be encoded
 %%     2) MaxLength: integer() - the maximal length of the string (defined in specification)
 %% Returns:
 %%     1) the binary sequence
-%% @end 
+%% @end
 
 pack_var_c_octet_string(String, MaxLength) when length(String) < MaxLength ->
     BinString = list_to_binary(String),
@@ -57,7 +57,7 @@ pack_var_c_octet_string(String, MaxLength) when length(String) < MaxLength ->
 
 
 
-%% @doc 
+%% @doc
 %% Encodes the optional value into TLV (Tag-Length-Value) binary sequence.
 %% Arguments:
 %%     1) Tag:   integer()  - the tag of the field to be encoded
@@ -65,7 +65,7 @@ pack_var_c_octet_string(String, MaxLength) when length(String) < MaxLength ->
 %%     3) F:     function() - the function, that encodes the body of the field
 %% Returns:
 %%     1) the binary sequence
-%% @end 
+%% @end
 
 pack_optional_tlv(_Tag, undefined, _F) ->
     <<>>;
@@ -105,7 +105,7 @@ unpack_c_octet_string(Accumulator, Length, <<0:8, Tail/binary>>, [Value | _Value
 
 unpack_c_octet_string(_Accumulator, _Length, <<0:8, _/binary>>, _Values) ->
     throw(bad_string);
-    
+
 unpack_c_octet_string(Accumulator, Length, <<Head:8, Tail/binary>>, [Value | Values]) when Length + 1 < Value ->
     unpack_c_octet_string([Head | Accumulator], Length + 1, Tail, [Value | Values]);
 
@@ -114,4 +114,3 @@ unpack_c_octet_string(Accumulator, Length, <<Head:8, Tail/binary>>, [Value | Val
 
 unpack_c_octet_string(_Accumulator, _Length, _Binary, _RestLength) ->
     throw(bad_string).
-
