@@ -163,7 +163,11 @@ get_decoder(?its_session_info, 2 = _Size) ->
     fun(<<X: 2/binary>>) -> binary_to_list(X) end;                        %% 5.3.2.43
 
 get_decoder(?ussd_service_op, 1 = _Size) ->
-    fun(<<X: 1/binary>>) -> binary_to_list(X) end.                        %% 5.3.2.44
+    fun(<<X: 1/binary>>) -> binary_to_list(X) end;                        %% 5.3.2.44
+
+get_decoder(_Operation, Size) ->                                          %% unknown optional PDU
+    fun(<<X: Size/binary>>) -> X end.
+
 
 
 

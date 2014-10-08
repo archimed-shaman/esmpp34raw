@@ -51,7 +51,7 @@ get_c_octet_string(Stream, PossibleSizes) when is_list(PossibleSizes) ->
 %%     1) the binary sequence
 %% @end
 
-pack_var_c_octet_string(String, MaxLength) when length(String) < MaxLength ->
+pack_var_c_octet_string(String, MaxLength) when length(String) =< MaxLength ->
     BinString = list_to_binary(String),
     <<BinString/binary, 0:8>>.
 
