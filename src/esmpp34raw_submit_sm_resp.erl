@@ -16,7 +16,7 @@
 
 
 unpack(Stream) when is_binary(Stream) ->
-    {MessageId, <<>>}   = esmpp34raw_utils:get_var_c_octet_string(Stream, 65),
+    {MessageId, _}   = esmpp34raw_utils:get_var_c_octet_string(Stream, 65),
     #submit_sm_resp {message_id = MessageId}.
 
 
