@@ -72,6 +72,7 @@ get_decoder(?source_subaddress, Size) when Size >= 2; Size =< 23 ->
     fun(<<X: Size/binary>>) -> binary_to_list(X) end;                     %% 5.3.2.15
 
 %% TODO: add decoder for dest_subaddress bitmask and for the other octets
+%% TODO: make as list too
 get_decoder(?dest_subaddress, Size) when Size >= 2, Size =< 23 ->
     fun(<<X: Size/binary>>) -> binary_to_list(X) end;                     %% 5.3.2.16
 
@@ -276,6 +277,7 @@ get_encoder(?network_error_code) ->
             list_to_binary(X)                                             %% 5.3.2.31
     end;
 
+%% TODO: as binary too
 get_encoder(?message_payload) ->
     fun(X) when is_list(X) -> list_to_binary(X) end;                      %% 5.3.2.32
 
